@@ -28,9 +28,11 @@ services:
       - postgres
       - redis
     volumes:
-      - "${MUSIC_DIRECTORY_SERVE_PATH}:/music:ro"
-      - "${MEDIA_ROOT}:${MEDIA_ROOT}"
-    env_file: all.env
+      - "${HOST_MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
+      - "${HOST_MEDIA_ROOT}:/srv/wwww/media"
+    env_file:
+      - all.env
+      - shared.env
     environment:
       - C_FORCE_ROOT=true
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
@@ -50,9 +52,8 @@ services:
     depends_on:
       - postgres
       - redis
-    env_file: all.env
-    environment:
-      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
+    env_file:
+      - all.env
     command: celery -A funkwhale_api.taskapp beat --pidfile= -l INFO
 
   api:
@@ -62,13 +63,15 @@ services:
       - postgres
       - redis
     volumes:
-      - "${MUSIC_DIRECTORY_SERVE_PATH}:/music:ro"
-      - "${MEDIA_ROOT}:${MEDIA_ROOT}"
-      - "${STATIC_ROOT}:${STATIC_ROOT}"
-      - "${FUNKWHALE_FRONTEND_PATH}:/frontend"
+      - "${HOST_MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
+      - "${HOST_MEDIA_ROOT}:/srv/wwww/media"
+      - "${HOST_STATIC_ROOT}:/srv/wwww/static"
+      - "${HOST_FUNKWHALE_FRONTEND_PATH}:/frontend"
     expose:
       - 5000
-    env_file: all.env
+    env_file:
+      - all.env
+      - shared.env
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
 
@@ -76,15 +79,18 @@ services:
     image: ${WB_IMG:-nginx}:${WB_TAG:-latest}
     container_name: ${WB_CONTAINER_NAME:-funkwhale-web}
     restart: ${WB_RESTART:-unless-stopped}
+    networks:
+      - default
+      - main-webservices
     depends_on:
       - api
     volumes:
       - "./nginx/funkwhale.template:/etc/nginx/conf.d/funkwhale.template:ro"
       - "./nginx/funkwhale_proxy.conf:/etc/nginx/funkwhale_proxy.conf:ro"
-      - "${MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
-      - "${MEDIA_ROOT}:/srv/wwww/media:ro"
-      - "${STATIC_ROOT}:/srv/wwww/static:ro"
-      - "${FUNKWHALE_FRONTEND_PATH}:/srv/wwww/frontend:ro"
+      - "${HOST_MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
+      - "${HOST_MEDIA_ROOT}:/srv/wwww/media:ro"
+      - "${HOST_STATIC_ROOT}:/srv/wwww/static:ro"
+      - "${HOST_FUNKWHALE_FRONTEND_PATH}:/srv/wwww/frontend:ro"
     expose:
       - 80
     env_file:
@@ -98,7 +104,9 @@ services:
         && cat /etc/nginx/conf.d/default.conf
         && nginx -g 'daemon off;'"
 
-networks:    
+networks:
   default:
+    internal: true
+  main-webservices:
     external:
       name: ${NETWORK}
