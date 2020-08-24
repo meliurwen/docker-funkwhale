@@ -28,11 +28,12 @@ services:
       - postgres
       - redis
     volumes:
-      - "${MUSIC_DIRECTORY_SERVE_PATH-/srv/docker/volumes/funkwhale/media/import_music}:${MUSIC_DIRECTORY_PATH-/music}:ro"
+      - "${MUSIC_DIRECTORY_SERVE_PATH}:/music:ro"
       - "${MEDIA_ROOT}:${MEDIA_ROOT}"
     env_file: all.env
     environment:
-        - C_FORCE_ROOT=true
+      - C_FORCE_ROOT=true
+      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
     # Celery workers handle background tasks (such file imports or federation
     # messaging). The more processes a worker gets, the more tasks
     # can be processed in parallel. However, more processes also means
@@ -50,6 +51,8 @@ services:
       - postgres
       - redis
     env_file: all.env
+    environment:
+      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
     command: celery -A funkwhale_api.taskapp beat --pidfile= -l INFO
 
   api:
@@ -59,31 +62,35 @@ services:
       - postgres
       - redis
     volumes:
-      - "${MUSIC_DIRECTORY_SERVE_PATH-/srv/docker/volumes/funkwhale/media/import_music}:${MUSIC_DIRECTORY_PATH-/music}:ro"
+      - "${MUSIC_DIRECTORY_SERVE_PATH}:/music:ro"
       - "${MEDIA_ROOT}:${MEDIA_ROOT}"
       - "${STATIC_ROOT}:${STATIC_ROOT}"
       - "${FUNKWHALE_FRONTEND_PATH}:/frontend"
     expose:
       - 5000
     env_file: all.env
+    environment:
+      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
 
   nginx:
-    image: nginx
-    restart: unless-stopped
+    image: ${WB_IMG:-nginx}:${WB_TAG:-latest}
+    container_name: ${WB_CONTAINER_NAME:-funkwhale-web}
+    restart: ${WB_RESTART:-unless-stopped}
     depends_on:
       - api
     volumes:
       - "./nginx/funkwhale.template:/etc/nginx/conf.d/funkwhale.template:ro"
       - "./nginx/funkwhale_proxy.conf:/etc/nginx/funkwhale_proxy.conf:ro"
-      - "${MUSIC_DIRECTORY_SERVE_PATH-/srv/docker/volumes/funkwhale/media/import_music}:${MUSIC_DIRECTORY_SERVE_PATH-/srv/docker/volumes/funkwhale/media/import_music}:ro"
-      - "${MEDIA_ROOT}:${MEDIA_ROOT}:ro"
-      - "${STATIC_ROOT}:${STATIC_ROOT}:ro"
-      - "${FUNKWHALE_FRONTEND_PATH}:/frontend:ro"
+      - "${MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
+      - "${MEDIA_ROOT}:/srv/wwww/media:ro"
+      - "${STATIC_ROOT}:/srv/wwww/static:ro"
+      - "${FUNKWHALE_FRONTEND_PATH}:/srv/wwww/frontend:ro"
     expose:
       - 80
     env_file:
-      - all.env
       - nginx.env
+    environment:
+      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
     command: >
         sh -c "envsubst \"`env | awk -F = '{printf \" $$%s\", $$1}'`\"
         < /etc/nginx/conf.d/funkwhale.template
