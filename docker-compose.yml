@@ -44,7 +44,7 @@ services:
     # of CPUs. You can adjust this, by explicitly setting the --concurrency
     # flag:
     #   celery -A funkwhale_api.taskapp worker -l INFO --concurrency=4
-    command: celery -A funkwhale_api.taskapp worker -l INFO --concurrency=${CELERYD_CONCURRENCY-0}
+    command: celery -A funkwhale_api.taskapp worker -l INFO --concurrency=${CELERYD_CONCURRENCY:-0}
 
   celerybeat:
     image: funkwhale/funkwhale:${FUNKWHALE_VERSION:-latest}
@@ -54,6 +54,8 @@ services:
       - redis
     env_file:
       - all.env
+    environment:
+      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
     command: celery -A funkwhale_api.taskapp beat --pidfile= -l INFO
 
   api:
