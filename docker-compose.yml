@@ -13,7 +13,7 @@ services:
       - postgres.env
 
   redis:
-    image: ${RD_IMG:-redis}:${RD_TAG:-5}
+    image: ${RD_IMG:-redis}:${RD_TAG:-6}
     container_name: ${RD_CONTAINER_NAME:-funkwhale-cache}
     restart: ${RD_RESTART:-unless-stopped}
     volumes:
