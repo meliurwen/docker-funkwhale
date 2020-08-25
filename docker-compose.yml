@@ -108,7 +108,6 @@ services:
 
 networks:
   default:
-    internal: true
   main-webservices:
     external:
       name: ${NETWORK}
