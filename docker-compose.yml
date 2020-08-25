@@ -22,8 +22,9 @@ services:
       - 6379
 
   celeryworker:
-    restart: unless-stopped
     image: funkwhale/funkwhale:${FUNKWHALE_VERSION:-latest}
+    container_name: ${CW_CONTAINER_NAME:-funkwhale-celeryworker}
+    restart: ${CW_RESTART:-unless-stopped}
     depends_on:
       - postgres
       - redis
@@ -48,7 +49,8 @@ services:
 
   celerybeat:
     image: funkwhale/funkwhale:${FUNKWHALE_VERSION:-latest}
-    restart: unless-stopped
+    container_name: ${CB_CONTAINER_NAME:-funkwhale-celerybeat}
+    restart: ${CB_RESTART:-unless-stopped}
     depends_on:
       - postgres
       - redis
@@ -61,7 +63,8 @@ services:
 
   api:
     image: funkwhale/funkwhale:${FUNKWHALE_VERSION:-latest}
-    restart: unless-stopped
+    container_name: ${AP_CONTAINER_NAME:-funkwhale-api}
+    restart: ${AP_RESTART:-unless-stopped}
     depends_on:
       - postgres
       - redis
