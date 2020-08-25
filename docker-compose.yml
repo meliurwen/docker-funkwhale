@@ -54,8 +54,9 @@ services:
       - redis
     env_file:
       - all.env
+      - shared.env # Probably this is not necessary
     environment:
-      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
+      - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME} # This is necessary
     command: celery -A funkwhale_api.taskapp beat --pidfile= -l INFO
 
   api:
