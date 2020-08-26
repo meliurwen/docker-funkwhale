@@ -32,11 +32,11 @@ services:
       - postgres
       - redis
     volumes:
-      - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/wwww/music:ro"
-      - "${HOST_MEDIA_ROOT}:/srv/wwww/media"
+      - "${HOST_MUSIC_DIRECTORY_PATH}:/data/music:ro"
+      - "${HOST_MEDIA_ROOT}:/data/media"
     env_file:
       - all.env
-      - shared.env
+      - paths.env
     environment:
       - C_FORCE_ROOT=true
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
@@ -66,15 +66,15 @@ services:
       - postgres
       - redis
     volumes:
-      - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/wwww/music:ro"
-      - "${HOST_MEDIA_ROOT}:/srv/wwww/media"
-      - "${HOST_STATIC_ROOT}:/srv/wwww/static"
+      - "${HOST_MUSIC_DIRECTORY_PATH}:/data/music:ro"
+      - "${HOST_MEDIA_ROOT}:/data/media"
+      - "${HOST_STATIC_ROOT}:/data/static"
       - "${HOST_FUNKWHALE_FRONTEND_PATH}:/frontend"
     expose:
       - 5000
     env_file:
       - all.env
-      - shared.env
+      - paths.env
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
 
