@@ -35,7 +35,7 @@ services:
       - "${HOST_MUSIC_DIRECTORY_PATH}:/data/music:ro"
       - "${HOST_MEDIA_ROOT}:/data/media"
     env_file:
-      - all.env
+      - fw_config.env
       - paths.env
     environment:
       - C_FORCE_ROOT=true
@@ -50,7 +50,7 @@ services:
       - postgres
       - redis
     env_file:
-      - all.env
+      - fw_config.env
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME} # This is necessary
     command: celery -A funkwhale_api.taskapp beat --pidfile= -l INFO
@@ -73,7 +73,7 @@ services:
     expose:
       - 5000
     env_file:
-      - all.env
+      - fw_config.env
       - paths.env
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
