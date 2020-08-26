@@ -6,7 +6,7 @@ services:
     container_name: ${DB_CONTAINER_NAME:-funkwhale-db}
     restart: ${DB_RESTART:-unless-stopped}
     volumes:
-      - ${LOCAL_STACK_DIR}/postgres/data:/var/lib/postgresql/data
+      - ${HOST_DB_DIR}:/var/lib/postgresql/data
     expose:
       - 5432
     env_file:
@@ -17,7 +17,7 @@ services:
     container_name: ${RD_CONTAINER_NAME:-funkwhale-cache}
     restart: ${RD_RESTART:-unless-stopped}
     volumes:
-      - ${LOCAL_STACK_DIR}/redis/data:/data
+      - ${HOST_CACHE_DIR}:/data
     expose:
       - 6379
 
@@ -25,6 +25,9 @@ services:
     image: funkwhale/funkwhale:${FUNKWHALE_VERSION:-latest}
     container_name: ${CW_CONTAINER_NAME:-funkwhale-celeryworker}
     restart: ${CW_RESTART:-unless-stopped}
+    networks:
+      - default
+      - internet-access
     depends_on:
       - postgres
       - redis
@@ -37,14 +40,6 @@ services:
     environment:
       - C_FORCE_ROOT=true
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
-    # Celery workers handle background tasks (such file imports or federation
-    # messaging). The more processes a worker gets, the more tasks
-    # can be processed in parallel. However, more processes also means
-    # a bigger memory footprint.
-    # By default, a worker will span a number of process equal to your number
-    # of CPUs. You can adjust this, by explicitly setting the --concurrency
-    # flag:
-    #   celery -A funkwhale_api.taskapp worker -l INFO --concurrency=4
     command: celery -A funkwhale_api.taskapp worker -l INFO --concurrency=${CELERYD_CONCURRENCY:-0}
 
   celerybeat:
@@ -56,7 +51,6 @@ services:
       - redis
     env_file:
       - all.env
-      - shared.env # Probably this is not necessary
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME} # This is necessary
     command: celery -A funkwhale_api.taskapp beat --pidfile= -l INFO
@@ -65,6 +59,9 @@ services:
     image: funkwhale/funkwhale:${FUNKWHALE_VERSION:-latest}
     container_name: ${AP_CONTAINER_NAME:-funkwhale-api}
     restart: ${AP_RESTART:-unless-stopped}
+    networks:
+      - default
+      - internet-access
     depends_on:
       - postgres
       - redis
@@ -112,6 +109,8 @@ services:
 
 networks:
   default:
+    internal: true
+  internet-access:
   main-webservices:
     external:
       name: ${NETWORK}
