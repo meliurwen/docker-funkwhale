@@ -32,7 +32,7 @@ services:
       - postgres
       - redis
     volumes:
-      - "${HOST_MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
+      - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/wwww/music:ro"
       - "${HOST_MEDIA_ROOT}:/srv/wwww/media"
     env_file:
       - all.env
@@ -66,7 +66,7 @@ services:
       - postgres
       - redis
     volumes:
-      - "${HOST_MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
+      - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/wwww/music:ro"
       - "${HOST_MEDIA_ROOT}:/srv/wwww/media"
       - "${HOST_STATIC_ROOT}:/srv/wwww/static"
       - "${HOST_FUNKWHALE_FRONTEND_PATH}:/frontend"
@@ -90,7 +90,7 @@ services:
     volumes:
       - "./nginx/funkwhale.template:/etc/nginx/conf.d/funkwhale.template:ro"
       - "./nginx/funkwhale_proxy.conf:/etc/nginx/funkwhale_proxy.conf:ro"
-      - "${HOST_MUSIC_DIRECTORY_SERVE_PATH}:/srv/wwww/music:ro"
+      - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/wwww/music:ro"
       - "${HOST_MEDIA_ROOT}:/srv/wwww/media:ro"
       - "${HOST_STATIC_ROOT}:/srv/wwww/static:ro"
       - "${HOST_FUNKWHALE_FRONTEND_PATH}:/srv/wwww/frontend:ro"
