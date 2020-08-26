@@ -111,6 +111,7 @@ networks:
   default:
     internal: true
   internet-access:
+    internal: ${NO_INTERNET_ACC}
   main-webservices:
     external:
-      name: ${NETWORK}
+      name: ${REVERSE_PROXY_NETWORK}
