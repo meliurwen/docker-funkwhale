@@ -109,8 +109,8 @@ docker-compose build --pull && docker-compose up -d
 
 ### Network Before
 
-![Network Before](.git/media/network-before.png)
+![Network Before](.gitlab/media/network-before.png)
 
 ### Network Now
 
-![Network Now](.git/media/network-now.png)
+![Network Now](.gitlab/media/network-now.png)
