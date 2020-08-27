@@ -51,9 +51,17 @@ There has been a **_lot_** of changes, I will list the most notable ones:
 + Except for `DJANGO_SECRET_KEY` and `FUNKWHALE_HOSTNAME` which are mandatory variables to manually set, all the optional variables are left empty in the `*.var` files by default and has a correspondent default value defined in the `docker-compose.yml` file (except for `funkwhale.env`).
 + `postgres` service image tag has been upgraded from `11` to `12.4` and `redis` from to `5` to `6`.
 
-## What Doesn't Changed
+## What Didn't Change
 
-The overall stack structure remained the same, with the same container images
++ The overall stack structure remained the same, with the same container images.
++ The name of the services (but they should be changed to a more generic ones,
+like: `web`, `api`, `db`, `cache`, etc...).
++ The extra manual steps necessary to initialize for the first time the app
++ The extra manual steps necessary to partially initialize the database in case
+to upgrade to a new version (tables or columns has been added/removed)
++ The extra manual steps in case of bump to a new version of the service that is
+not backward compatible (for example posgres likes to break compatibility at every
+major release).
 
 ## How to Install
 
