@@ -1,0 +1,10 @@
+--- api/config/settings/common.py.original	2020-08-29 12:29:47.397299670 +0200
++++ api/config/settings/common.py	2020-08-29 12:38:28.702664515 +0200
+@@ -1228,6 +1228,7 @@
+ VERSATILEIMAGEFIELD_SETTINGS = {
+     "create_images_on_demand": False,
+     "jpeg_resize_quality": env.int("THUMBNAIL_JPEG_RESIZE_QUALITY", default=95),
++    "progressive_jpeg": True,
+ }
+ RSA_KEY_SIZE = 2048
+ # for performance gain in tests, since we don't need to actually create the

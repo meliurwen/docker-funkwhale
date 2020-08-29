@@ -56,7 +56,11 @@ services:
     command: celery -A funkwhale_api.taskapp beat --pidfile= -l INFO
 
   api:
-    image: funkwhale/funkwhale:${FUNKWHALE_VERSION:-latest}
+    build:
+      context: api/.
+      args:
+        - IMAGE=funkwhale/funkwhale
+        - TAG=${FUNKWHALE_VERSION:-latest}
     container_name: ${AP_CONTAINER_NAME:-funkwhale-api}
     restart: ${AP_RESTART:-unless-stopped}
     networks:
@@ -78,8 +82,12 @@ services:
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
 
-  nginx:
-    image: ${WB_IMG:-nginx}:${WB_TAG:-latest}
+  web:
+    build:
+      context: nginx/.
+      args:
+        - IMAGE=${WB_IMG:-nginx}
+        - TAG=${WB_TAG:-latest}
     container_name: ${WB_CONTAINER_NAME:-funkwhale-web}
     restart: ${WB_RESTART:-unless-stopped}
     networks:
@@ -88,8 +96,6 @@ services:
     depends_on:
       - api
     volumes:
-      - "./nginx/funkwhale.template:/etc/nginx/conf.d/funkwhale.template:ro"
-      - "./nginx/funkwhale_proxy.conf:/etc/nginx/funkwhale_proxy.conf:ro"
       - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/wwww/music:ro"
       - "${HOST_MEDIA_ROOT}:/srv/wwww/media:ro"
       - "${HOST_STATIC_ROOT}:/srv/wwww/static:ro"
@@ -100,16 +106,6 @@ services:
       - nginx.env
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
-      - MEDIA_ROOT=/srv/wwww/media
-      - MUSIC_DIRECTORY_PATH=/srv/wwww/music
-      - STATIC_ROOT=/srv/wwww/static
-      - FUNKWHALE_FRONTEND_PATH=/srv/wwww/frontend
-    command: >
-        sh -c "envsubst \"`env | awk -F = '{printf \" $$%s\", $$1}'`\"
-        < /etc/nginx/conf.d/funkwhale.template
-        > /etc/nginx/conf.d/default.conf
-        && cat /etc/nginx/conf.d/default.conf
-        && nginx -g 'daemon off;'"
 
 networks:
   default:
