@@ -100,6 +100,10 @@ services:
       - nginx.env
     environment:
       - FUNKWHALE_HOSTNAME=${FUNKWHALE_HOSTNAME}
+      - MEDIA_ROOT=/srv/wwww/media
+      - MUSIC_DIRECTORY_PATH=/srv/wwww/music
+      - STATIC_ROOT=/srv/wwww/static
+      - FUNKWHALE_FRONTEND_PATH=/srv/wwww/frontend
     command: >
         sh -c "envsubst \"`env | awk -F = '{printf \" $$%s\", $$1}'`\"
         < /etc/nginx/conf.d/funkwhale.template
@@ -111,7 +115,7 @@ networks:
   default:
     internal: true
   internet-access:
-    internal: ${NO_INTERNET_ACC}
+    internal: ${NO_INTERNET_ACC:-false}
   main-webservices:
     external:
       name: ${REVERSE_PROXY_NETWORK}
