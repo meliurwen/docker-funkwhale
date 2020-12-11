@@ -7,9 +7,9 @@ LABEL maintainer="Meliurwen <meliruwen@gmail.com>"
 
 COPY root/ /
 
-ENV MEDIA_ROOT=/srv/wwww/media
-ENV MUSIC_DIRECTORY_PATH=/srv/wwww/music
-ENV STATIC_ROOT=/srv/wwww/static
-ENV FUNKWHALE_FRONTEND_PATH=/srv/wwww/frontend
+ENV MEDIA_ROOT=/srv/www/media
+ENV MUSIC_DIRECTORY_PATH=/srv/www/music
+ENV STATIC_ROOT=/srv/www/static
+ENV FUNKWHALE_FRONTEND_PATH=/srv/www/frontend
 
 ENTRYPOINT ["/entrypoint.sh"]

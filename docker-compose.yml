@@ -96,10 +96,10 @@ services:
     depends_on:
       - api
     volumes:
-      - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/wwww/music:ro"
-      - "${HOST_MEDIA_ROOT}:/srv/wwww/media:ro"
-      - "${HOST_STATIC_ROOT}:/srv/wwww/static:ro"
-      - "${HOST_FUNKWHALE_FRONTEND_PATH}:/srv/wwww/frontend:ro"
+      - "${HOST_MUSIC_DIRECTORY_PATH}:/srv/www/music:ro"
+      - "${HOST_MEDIA_ROOT}:/srv/www/media:ro"
+      - "${HOST_STATIC_ROOT}:/srv/www/static:ro"
+      - "${HOST_FUNKWHALE_FRONTEND_PATH}:/srv/www/frontend:ro"
     expose:
       - 80
     env_file:
